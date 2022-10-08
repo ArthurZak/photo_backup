@@ -21,7 +21,7 @@ class Yandex:
     def get_upload_link(self, disk_file_path: str):
         ya_url = 'https://cloud-api.yandex.net/v1/disk/resources'
         headers = self.get_headers()
-        params = {'path': disk_file_path, 'overwrite': 'true'}
+        params = {'path': disk_file_path}
         folder = requests.put(url=ya_url, headers=headers, params=params)
         return folder.status_code
 
@@ -30,8 +30,7 @@ class Yandex:
         headers = self.get_headers()
         params = {
             'path': f'{disk_file_path}/{file_name}',
-            'url': file_link,
-            'overwrite': 'true'
+            'url': file_link
         }
         response = requests.post(url=ya_url, headers=headers, params=params)
         return response.status_code

@@ -78,9 +78,12 @@ def backup(path, photo_album_vk='profile', photo_count=5,
 
 
 def main():
-    disk_path = input('Введите название папки (латиницей) для копирования фотографий:\n')
+    disk_path = input('Введите название папки (латиницей) для копирования фотографий:\n'
+                      'Или нажмите "enter" для выбора папки по умолчанию ("netology")\n')
     while True:
-        if all([char in letters for char in disk_path]):
+        if disk_path == "":
+            disk_path = 'netology'
+        elif all([char in letters for char in disk_path]):
             break
         else:
             disk_path = input(
