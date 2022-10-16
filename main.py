@@ -1,13 +1,9 @@
 from classes import VK, Yandex
-from tokens import access_token, ya_token
 import datetime
 import json
 import logging
 import string
-
-letters = set(string.ascii_letters) | set(string.digits) | set('_')
-user_id = '42549021'
-albums = {1: 'profile', 2: 'wall'}
+import configparser
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,13 +28,15 @@ def get_data(photos):
         date = datetime.datetime.fromtimestamp(date).strftime('%Y-%m-%d')
         photo_list = sorted(photo['sizes'], reverse=True, key=lambda x: x['height'])
         url = photo_list[0]['url']
-        if len(photos_json) > 0:
-            for item in photos_json:
-                if item['file_name'] == f'{likes}.jpg':
-                    likes += f'_{date}'
-        photo_data = {"file_name": f'{likes}.jpg', "size": photo_list[0]['type']}
+        name = f'{likes}.jpg'
+        if name in links:
+            name = f'{likes}_{date}.jpg'
+            if name in links:
+                count = list(links.keys()).count(name)
+                name = f'{likes}_{date}_({count}).jpg'
+        links[name] = url
+        photo_data = {"file_name": name, "size": photo_list[0]['type']}
         photos_json.append(photo_data)
-        links[f'{likes}.jpg'] = url
     return photos_json, links
 
 
@@ -62,22 +60,32 @@ def data_upload(token_yandex, path, photos_json, links):
         json.dump(photos_json, json_file, indent=4, ensure_ascii=False)
 
 
-def backup(path, photo_album_vk='profile', photo_count=5,
-           token_vk=access_token, user_id_vk=user_id, token_yandex=ya_token):
+def backup(path, user_id_vk, photo_album_vk,
+           token_vk, token_yandex, photo_count):
     logging.info(f'Backup starting.')
     photos = get_photo(token_vk, user_id_vk, photo_album_vk, photo_count)
     if photos.get('response', 'error') == 'error':
         logging.error(f'Images was NOT gotten.')
+        print('Фотографии не были скопированы.\nПроверьте введённые данные!')
     else:
         photos_json, links = get_data(photos)
         if len(photos_json) > 0:
             logging.info(f'Images was gotten.')
             data_upload(token_yandex, path, photos_json, links)
+            print('Фотографии успешно скопированы.')
         else:
             logging.error(f'Images was NOT gotten.')
+            print('Фотографии не были скопированы.\nПроверьте введённые данные!')
 
 
 def main():
+    config = configparser.ConfigParser()
+    config.read("tokens.ini")
+    ya_token = config['TOKENS']['ya_token']
+    access_token = config['TOKENS']['access_token']
+    letters = set(string.ascii_letters) | set(string.digits) | set('_')
+    user_id = input('Введите id или username пользователя VK:\n')
+    albums = {1: 'profile', 2: 'wall'}
     disk_path = input('Введите название папки (латиницей) для копирования фотографий:\n'
                       'Или нажмите "enter" для выбора папки по умолчанию ("netology")\n')
     while True:
@@ -89,11 +97,14 @@ def main():
             disk_path = input(
                 'Введено недопустимое название папки.\n'
                 'Введите название папки (латиницей) для копирования фотографий:\n')
-    count = input('Введите количество фотографик для копирования:\n')
+    count = input('Введите количество фотографик для копирования:\n'
+                  'Или нажмите "enter" для выбора количества по умолчанию (5)\n')
     while True:
         if count.isdigit():
             count = int(count)
             break
+        elif count == "":
+            count = '5'
         else:
             count = input('Введено не число.\nВведите количество фотографий для копирования:\n')
     run = True
@@ -106,8 +117,8 @@ def main():
             run = False
         else:
             print('Неверный номер альбома.')
-    backup(path=disk_path, photo_album_vk=photo_album, photo_count=count)
-    print('Фотографии успешно скопированы.')
+    backup(path=disk_path, user_id_vk=user_id, photo_album_vk=photo_album,
+           token_vk=access_token, token_yandex=ya_token, photo_count=count)
 
 
 if __name__ == '__main__':

@@ -1,42 +1,22 @@
 [
     {
+        "file_name": "9.jpg",
+        "size": "w"
+    },
+    {
         "file_name": "2.jpg",
-        "size": "w"
-    },
-    {
-        "file_name": "2_2012-08-22.jpg",
-        "size": "y"
-    },
-    {
-        "file_name": "7.jpg",
-        "size": "w"
-    },
-    {
-        "file_name": "3.jpg",
-        "size": "w"
-    },
-    {
-        "file_name": "1.jpg",
-        "size": "w"
+        "size": "x"
     },
     {
         "file_name": "4.jpg",
         "size": "w"
     },
     {
-        "file_name": "3_2012-10-09.jpg",
-        "size": "w"
+        "file_name": "0.jpg",
+        "size": "z"
     },
     {
-        "file_name": "3_2012-10-09_2012-10-09.jpg",
-        "size": "w"
-    },
-    {
-        "file_name": "3_2012-10-09_2012-10-09_2012-10-09.jpg",
-        "size": "w"
-    },
-    {
-        "file_name": "5.jpg",
+        "file_name": "4_2014-09-28.jpg",
         "size": "w"
     }
 ]

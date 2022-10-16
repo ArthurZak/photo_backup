@@ -30,7 +30,8 @@ class Yandex:
         headers = self.get_headers()
         params = {
             'path': f'{disk_file_path}/{file_name}',
-            'url': file_link
+            'url': file_link,
+            'overwrite': 'false'
         }
         response = requests.post(url=ya_url, headers=headers, params=params)
         return response.status_code
@@ -50,7 +51,11 @@ class VK:
         return response.json()
 
     def get_photo(self, album_id, count):
+        if not self.id.isdigit():
+            id = self.users_info()['response'][0]['id']
+        else:
+            id = self.id
         url = 'https://api.vk.com/method/photos.get'
-        params = {'owner_id': self.id, 'album_id': album_id, 'photo_sizes': 1, 'extended': 1, 'count': count}
+        params = {'owner_id': id, 'album_id': album_id, 'photo_sizes': 1, 'extended': 1, 'count': count}
         response = requests.get(url, params={**self.params, **params})
         return response.json()
